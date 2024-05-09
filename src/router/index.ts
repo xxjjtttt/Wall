@@ -1,24 +1,23 @@
-// 引入路由
-import {createRouter, createWebHistory} from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
+import HomeView from "../views/HomeView.vue"
+import HomeLayout from "@/layout/HomeLayout.vue"
 
-// 创建路由
 const router = createRouter({
-    history: createWebHistory(), // 设置工作模式
-    // history: createWebHashHistory(),
-    routes: [
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/",
+      name: "home-layout",
+      component: HomeLayout,
+      children: [
         {
-            name: 'index',
-            path: '/',
-            component: () => import("@/layout/Main.vue"),
-            children: [
-                {
-                    name: "post",
-                    path: "",
-                    component: () => import("@/views/Home.vue")
-                }
-            ]
+          path: "",
+          name: "home-view",
+          component: HomeView
         }
-    ]
+      ]
+    }
+  ]
 })
 
 export default router
