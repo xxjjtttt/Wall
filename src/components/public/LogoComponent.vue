@@ -1,7 +1,7 @@
 <template>
   <div class="logo-component">
     <div class="logo-container">
-      <img src="/icon.png" alt="logo">
+      <img alt="logo" src="/icon.png">
     </div>
     <div class="title-container">
       <span>WALL</span>
@@ -16,7 +16,8 @@
 <style scoped>
 .logo-component {
   display: grid;
-  grid-template-columns: 50px auto;
+  width: 100%;
+  grid-template-columns: auto auto;
   align-items: center;
   column-gap: 10px;
 }

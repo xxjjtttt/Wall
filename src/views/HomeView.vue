@@ -5,36 +5,50 @@
       <div class="home-container">
         <div class="setting">
 
-          <el-select :placeholder="sortSelection.title" v-model="sortBy">
-            <el-option v-for="item in sortSelection.selectionList" :key="item" :value="item" :lable="item"></el-option>
-          </el-select :placeholder="displaySelection.title" v-model="displayBy">
+          <el-select v-model="sortBy" :placeholder="sortSelection.title">
+            <el-option v-for="item in sortSelection.selectionList" :key="item" :lable="item" :value="item"></el-option>
+          </el-select>
 
-          <el-select>
-            <el-option v-for="item in displaySelection.selectionList" :key="item" :value="item" :lable="item">
-              <template #prefix>
-                <el-icon>
-                  <component :is="item"></component>
-                </el-icon>
-              </template>
+          <el-select v-model="displayBy" :placeholder="displaySelection.title">
+            <el-option v-for="item in displaySelection.selectionList" :key="item" :lable="item" :value="item">
             </el-option>
           </el-select>
 
         </div>
 
-        <div class="postlist">
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
-          <el-skeleton :rows="5" />
+        <div class="posts">
+          <el-skeleton v-for="post in postViewData.list" :key="post.pid" :loading="loading" :rows="3" animated>
+            <template #template>
+            </template>
+            <template #default>
+              <el-card shadow="hover" @click="viewPost(post.pid)">
+                <div class="card-header">
+                  <span>{{ post.title }}</span>
+                </div>
+<!--                <template #footer>-->
+<!--                  <span>{{ post.createTime }}</span>-->
+<!--                </template>-->
+              </el-card>
+              <br>
+              <br>
+            </template>
+          </el-skeleton>
         </div>
 
+        <div class="page">
+          <el-pagination
+              :current-page="i"
+              :page-size="10"
+              :pager-count="10"
+              :total="postViewData.num"
+              layout="prev, pager, next"
+              @current-change="indexChange"
+          />
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
       </div>
     </el-scrollbar>
   </div>
@@ -43,24 +57,65 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-import { Postcard } from "@element-plus/icons-vue";
+import {onBeforeMount, ref} from "vue";
+import router from "@/router";
+import {onBeforeRouteUpdate, useRoute} from "vue-router";
+import axios from "axios";
+
 
 const sortSelection = {
   title: "排序方式",
   selectionList: [
-    "最近", "最热"
+    "最近", "最热", "随机"
   ]
 }
 
 const displaySelection = {
   title: "展示方式",
-  selectionList: [Postcard]
+  selectionList: [
+    "卡片"
+  ]
 }
 
-let sortBy = ref("最近")
-let displayBy = ref(Postcard)
+const route = useRoute()
+let i = ref()
+let sortBy = ref(sortSelection.selectionList[0])
+let displayBy = ref(displaySelection.selectionList[0])
 
+
+let loading = ref(true)
+
+const viewPost = (postId: number) => {
+  router.push("/post/" + postId)
+}
+
+let postViewData = ref({})
+
+const getData = ()=>{
+  axios.get("http://47.93.134.155:8888/view/home", {
+    params: {
+      index: i.value
+    }
+  }).then((response) => {
+    postViewData.value = response.data
+    setTimeout(() => {
+      loading.value = false
+    }, 1000);
+  })
+}
+
+
+onBeforeMount(() => {
+  i.value = route.params.index
+  getData()
+})
+
+const indexChange = (index: number) => {
+  loading.value = true
+  i.value = index.toString()
+  router.push(index.toString())
+  getData()
+}
 </script>
 
 <style scoped>
@@ -74,15 +129,20 @@ let displayBy = ref(Postcard)
 .home-container {
   display: grid;
   width: 55%;
-  margin-top: 10px;
   margin: auto;
   /* background-color: bisque; */
   grid-template-rows: 40px auto;
+  margin-top: 10px;
 }
 
 .setting {
   display: grid;
   grid-template-columns: 100px 100px;
   column-gap: 10px;
+}
+
+.page {
+  margin: auto;
+  margin-top: 20px;
 }
 </style>

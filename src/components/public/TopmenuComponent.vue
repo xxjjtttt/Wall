@@ -14,14 +14,16 @@
 
 <script lang="ts" setup>
 import router from "@/router";
-import { ref, shallowRef } from "vue";
-import { Bell, Comment, Plus, User } from "@element-plus/icons-vue"
+import {ref} from "vue";
+import {Bell, Comment, Plus, User} from "@element-plus/icons-vue"
+
+const id = localStorage.getItem("id")
 
 const menuItems = [
-  { index: "/chat", tag: "", icon: Comment },
-  { index: "/publish", tag: "Create", icon: Plus },
-  { index: "/message", tag: "", icon: Bell },
-  { index: "/me", tag: "", icon: User }
+  {index: "/none", tag: "", icon: Comment},
+  {index: "/create", tag: "Create", icon: Plus},
+  {index: "/none", tag: "", icon: Bell},
+  {index: "/user/" + id, tag: "", icon: User}
 ]
 
 let activeIndex = ref("")
